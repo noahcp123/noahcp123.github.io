@@ -1,5 +1,5 @@
-var redirect_uri = "http://noahcp123.github.io/index.html";
-var app_uri = "https://noahcp123.github.io/app.html";
+var redirect_uri = "http://localhost:8888/index.html";
+var app_uri = "https://localhost:8888/app.html";
 
 var client_id = "2abe2aba952841d3b3800398b492d525";
 var client_secret = "c830328d91284e36be384f8fa8a6421a";
@@ -32,6 +32,7 @@ function handleRedirect() {
   console.log("handleRedirect fired");
   let code = getCode();
   fetchAccessToken(code);
+  //window.location.href = redirect_uri
   window.history.pushState("", "", redirect_uri); //clear headers from URL
   console.log("redirect ran");
 }
@@ -46,7 +47,7 @@ function requestAuthorization() {
   url += "&show_dialog=true";
   url +=
     "&scope=user-read-private playlist-read-private playlist-read-collaborative user-read-playback-position user-top-read user-read-recently-played user-library-read user-read-private";
-  window.location.href = redirect_uri; //set URL to built URL
+  window.location.href = url; //set URL to built URL
 }
 
 //Returns code scraped from end of redirect URL after requestAuthorization
