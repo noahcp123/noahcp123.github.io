@@ -1,4 +1,4 @@
-var redirect_uri = "https://ncaple.github.io/app/index.html";
+var redirect_uri = "https://noahcp123.github.io/app/";
 var app_uri = "https://ncaple.github.io/app/app.html";
 
 var client_id = "2abe2aba952841d3b3800398b492d525";
