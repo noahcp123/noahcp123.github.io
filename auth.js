@@ -1,5 +1,5 @@
-var redirect_uri = "https://noahcp123.github.io/index.html";
-var app_uri = "https://noahcp123.github.io/app.html";
+var redirect_uri = "http://localhost:8888/index.html";
+var app_uri = "http://localhost:8888/app.html";
 
 var client_id = "2abe2aba952841d3b3800398b492d525";
 var client_secret = "c830328d91284e36be384f8fa8a6421a";
@@ -97,7 +97,7 @@ function handleAuthResponse(data) {
   localStorage.setItem("access_token", data.access_token);
   localStorage.setItem("refresh_token", data.refresh_token);
   getMe().then((me) => {
-    localStorage.setItem('me', me.id)
+    localStorage.setItem('me', JSON.stringify(me))
   })
   onPageLoad()
 }
@@ -145,7 +145,7 @@ function startApp() {
 login_btn.addEventListener("click", (event) => {
   console.log("login_btn clicked");
   getMe().then((me) => {
-    localStorage.setItem('me', me.id)
+    localStorage.setItem('me', JSON.stringify(me))
   })
   .catch((error) => {
     console.log(error)
