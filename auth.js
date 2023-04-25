@@ -97,7 +97,7 @@ function handleAuthResponse(data) {
   localStorage.setItem("access_token", data.access_token);
   localStorage.setItem("refresh_token", data.refresh_token);
   getMe().then((me) => {
-    localStorage.setItem('me', me.id)
+    localStorage.setItem('me', JSON.stringify(me))
   })
   onPageLoad()
 }
@@ -145,7 +145,7 @@ function startApp() {
 login_btn.addEventListener("click", (event) => {
   console.log("login_btn clicked");
   getMe().then((me) => {
-    localStorage.setItem('me', me.id)
+    localStorage.setItem('me', JSON.stringify(me))
   })
   .catch((error) => {
     console.log(error)
