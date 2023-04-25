@@ -1,3 +1,1 @@
-function onPageLoad(){
-    document.getElementById("data").innerHTML = "data";
-}
+console.log(localStorage.getItem('me'))

@@ -1,4 +1,5 @@
 var redirect_uri = "http://localhost:8888/index.html";
+var app_uri = "http://localhost:8888/app.html";
 
 var client_id = "2abe2aba952841d3b3800398b492d525";
 var client_secret = "c830328d91284e36be384f8fa8a6421a";
@@ -21,8 +22,9 @@ function onPageLoad() {
   if (window.location.search.length > 0) {
     handleRedirect();
   }
-  const me = getMe()
-  console.log(me)
+  if (localStorage.hasOwnProperty("access_token") == true) {
+    checkIfAppReady()
+  }
 }
 
 //Fetched code with getCode, uses code to fetchAccessToken
@@ -32,7 +34,6 @@ function handleRedirect() {
   fetchAccessToken(code);
   window.history.pushState("", "", redirect_uri); //clear headers from URL
   console.log("redirect ran");
-  onPageLoad();
 }
 
 //Create the authorization URL and redirect to the user login page
@@ -76,7 +77,7 @@ function fetchAccessToken(code) {
 
 //Send POST to /token end point, return JSON object containing access_token
 async function callAuthorizationApi(body) {
-  console.log("callAuthorizationApi ran");
+  console.log("callAuthorizationApi fired");
   const response = await fetch(TOKEN, {
     method: "POST",
     credentials: "same-origin",
@@ -91,37 +92,64 @@ async function callAuthorizationApi(body) {
 
 //save all gathered tokens/data to internalStorage
 function handleAuthResponse(data) {
-  console.log("handleAuthorizationResponse ran");
+  console.log("handleAuthorizationResponse fired");
   localStorage.setItem("access_token", data.access_token);
   localStorage.setItem("refresh_token", data.refresh_token);
+  getMe().then((me) => {
+    localStorage.setItem('me', me.id)
+  })
+  onPageLoad()
 }
 
-function sendHttpRequest(method, url, headers, body) {
+async function sendHttpRequest(method, url, headers, body) {
   console.log("sendHttpRequest to", url);
-  return fetch(url, {
+  const response = await fetch(url, {
     method: method,
     headers: headers,
     body: body,
   })
-    .then((response) => response.json())
-    .catch((error) => console.error(error));
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  const data = await response.json()
+  return data;
 }
 
-function getMe() {
+async function getMe() {
+  console.log('getMe fired')
   method = 'Get'
   url = 'https://api.spotify.com/v1/me'
   headers = { "Authorization": "Bearer " + localStorage.getItem("access_token")}
   body = null;
-  const data = sendHttpRequest(method, url, headers, body)
-    .then(response => response)
-    .then(data => { return data })
-    .catch(error => console.error(error));
+  
+  const me = await sendHttpRequest(method, url, headers, body)
+  return me
+}
 
-    console.log(data)
+async function checkIfAppReady() {
+  console.log('checkIfAppReady fired')
+  getMe().then((response) => {
+    if (response) {
+      console.log('Passed checks! starting app.')
+      startApp()
+    }
+  })
+}
+
+function startApp() {
+  window.location.href = app_uri;
 }
 
 // Call requestAuthorization on login_btn click
 login_btn.addEventListener("click", (event) => {
   console.log("login_btn clicked");
-  requestAuthorization();
+  getMe().then((me) => {
+    localStorage.setItem('me', me.id)
+  })
+  .catch((error) => {
+    console.log(error)
+    if (error.message.includes('401')) {
+      requestAuthorization()
+    }
+  })
 });
