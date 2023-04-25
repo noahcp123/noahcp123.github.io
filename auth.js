@@ -1,4 +1,4 @@
-var redirect_uri = "http://noahcp123.github.io/";
+var redirect_uri = "https://noahcp123.github.io";
 var app_uri = "http://noahcp123.github.io/app.html";
 
 var client_id = "2abe2aba952841d3b3800398b492d525";
