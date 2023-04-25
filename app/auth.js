@@ -1,5 +1,5 @@
-var redirect_uri = "https://ncaple.github.io/app/index.html";
-var app_uri = "https://ncaple.github.io/app/app.html";
+var redirect_uri = "http://localhost:8888/index.html";
+var app_uri = "http://localhost:8888/app.html";
 
 var client_id = "2abe2aba952841d3b3800398b492d525";
 var client_secret = "c830328d91284e36be384f8fa8a6421a";
