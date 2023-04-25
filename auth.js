@@ -32,7 +32,7 @@ function handleRedirect() {
   console.log("handleRedirect fired");
   let code = getCode();
   fetchAccessToken(code);
-  window.location.href = url; //clear headers from URL
+  window.location.href = redirect_uri; //clear headers from URL
   console.log("redirect ran");
 }
 
