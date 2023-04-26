@@ -27,10 +27,25 @@ function checkAccessToken() {
 }
 
 async function initData() {
-    getTop20().then((top20) => {
-        console.log(top20)
-        sessionStorage.setItem('top20', JSON.stringify(top20))
-    })
+  const top20 = await getTop20().then((top20) => {
+    console.log(top20)
+      return top20
+      //sessionStorage.setItem('top20', JSON.stringify(top20))
+  })
+
+  let songList = []
+  top20.items.forEach(song => {
+    name = song.name
+    artist = song.artists[0].name
+    title = artist + " - " + name
+    songList.push(title)
+  });
+  
+  for (i = 0; i < 15; ++i) {
+    var li = document.createElement('li')
+    li.innerText = songList[i]
+    document.getElementById('top-artists').appendChild(li)
+  }
 }
 
 async function getTop20() {
