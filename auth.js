@@ -46,7 +46,7 @@ function requestAuthorization() {
   url += "&redirect_uri=" + encodeURI(redirect_uri);
   url += "&show_dialog=true";
   url +=
-    "&scope=user-read-private playlist-read-private playlist-read-collaborative user-read-playback-position user-top-read user-read-recently-played user-library-read user-read-private";
+    "&scope=user-read-private user-read-email playlist-read-private playlist-read-collaborative user-read-playback-position user-top-read user-read-recently-played user-library-read user-read-private";
   window.location.href = url; //set URL to built URL
 }
 
