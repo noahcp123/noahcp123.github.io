@@ -4,6 +4,7 @@
   <head>
     <title>App</title>
     <link rel="stylesheet" href="stylesheet.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="app.js" defer></script>
   </head>
 
@@ -16,7 +17,9 @@
         <dev><a class="nav_item">Contact</a></dev>
       </div>
       <div class="app_content">
-        <div id="chart_container">Chart Placeholder</div>
+        <div id="chart_container">
+          <canvas id="myChart"></canvas>
+        </div>
         <div id="top">
           <p id="display_name"></p>
           <p>Your top 10 artists:</p>
