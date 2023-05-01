@@ -2,6 +2,8 @@ var me = JSON.parse(localStorage.getItem("me"));
 var access_token = localStorage.getItem("access_token");
 var refresh_token = localStorage.getItem("refresh_token");
 
+const selectElement = document.querySelector(".type");
+
 async function sendHttpRequest(method, url, headers, body) {
   //console.log("sendHttpRequest to", url);
   const response = await fetch(url, {
@@ -23,7 +25,9 @@ function onPageLoad() {
   initData();
 }
 
-function checkAccessToken() {}
+function checkAccessToken() {
+
+}
 
 async function initData() {
   const top20 = await getTop20().then((top20) => {
@@ -31,10 +35,17 @@ async function initData() {
     return top20;
   });
 
+  const top20Artists = await getTop20Artists().then((top20Artists) => {
+    console.log(top20Artists);
+    return top20Artists;
+  });
+
   let songList = [];
+  let artistList = [];
+  let genres = [];
+
   let songIds = [];
   let artistsIds = [];
-  let genres = [];
   top20.items.forEach((song) => {
     title = song.artists[0].name + " - " + song.name;
     songId = song.id;
@@ -42,11 +53,15 @@ async function initData() {
     songList.push(title);
   });
 
-  for (i = 0; i < 15; ++i) {
-    var li = document.createElement("li");
-    li.innerText = songList[i];
-    document.getElementById("top-artists").appendChild(li);
-  }
+  top20Artists.items.forEach((artist) => {
+    artistList.push(artist.name)
+  });
+
+  sessionStorage.setItem('songList', songList)
+  sessionStorage.setItem('artistList', artistList)
+
+  updateDisplayList(sessionStorage.getItem('songList'));
+
   for (i = 0; i < songIds.length; ++i) {
     track = await getTrack(songIds[i]);
     artistsIds.push(track.artists[0].id);
@@ -84,6 +99,17 @@ async function initData() {
   displayPie(counts);
 }
 
+async function updateDisplayList(list){
+  console.log('updateDisplayList fired')
+  document.getElementById("top-artists").innerHTML = ""
+  list = list.split(',')
+  for (i = 0; i < 15; ++i) {
+    var li = document.createElement("li");
+    li.innerText = list[i];
+    document.getElementById("top-artists").appendChild(li);
+  }
+}
+
 async function getTop20() {
   console.log("getTop20 fired");
   method = "Get";
@@ -93,6 +119,17 @@ async function getTop20() {
 
   const top20 = await sendHttpRequest(method, url, headers, body);
   return top20;
+}
+
+async function getTop20Artists() {
+  console.log("getTop20Artists fired");
+  method = "Get";
+  url = "https://api.spotify.com/v1/me/top/artists";
+  headers = { Authorization: "Bearer " + localStorage.getItem("access_token") };
+  body = null;
+
+  const top20Artists = await sendHttpRequest(method, url, headers, body);
+  return top20Artists;
 }
 
 async function getTrack(trackId) {
@@ -145,3 +182,15 @@ function displayPie(genreCounts) {
     },
   });
 }
+
+selectElement.addEventListener("change", (event) => {
+  if (event.target.value == 'songs') {
+    updateDisplayList(sessionStorage.getItem('songList'))
+  }
+  if (event.target.value == 'artists') {
+    updateDisplayList(sessionStorage.getItem('artistList'))
+  }
+  if (event.target.value == 'albums') {
+    return
+  }
+});
