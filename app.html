@@ -22,7 +22,12 @@
         </div>
         <div id="top">
           <p id="display_name"></p>
-          <p>Your top 10 artists:</p>
+          <label for="type">Your top 15 </label>
+          <select name="type" class="type">
+            <option value="songs">Songs</option>
+            <!-- <option value="albums">Albums</option> -->
+            <option value="artists">Artists</option>
+          </select>
           <ol id="top-artists"></ol>
         </div>
         <canvas id="genres_chart"></canvas>
