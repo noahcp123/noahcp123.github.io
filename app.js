@@ -4,6 +4,7 @@ var refresh_token = localStorage.getItem("refresh_token");
 var storeDate = localStorage.getItem('storeDate')
 
 const selectElement = document.querySelector(".type");
+const refreshButton = document.getElementById("refreshButton")
 
 async function onPageLoad() {
   checkAccessToken()
@@ -22,6 +23,7 @@ function checkAccessToken() {
   if (access_token == null){
     localStorage.clear()
     window.location.href = 'https://noahcp123.github.io/index.html'
+    //window.location.href = 'http://localhost:8888/index.html'
   }
 }
 
@@ -179,6 +181,7 @@ async function sendHttpRequest(method, url, headers, body) {
     catch (error) {
         localStorage.clear()
         window.location.href = 'https://noahcp123.github.io/index.html'
+        //window.location.href = 'http://localhost:8888/index.html'
     }
     return data;
   }
@@ -235,4 +238,10 @@ selectElement.addEventListener("change", (event) => {
   if (event.target.value == "albums") {
     return;
   }
+});
+
+refreshButton.addEventListener("click", (event) => {
+    localStorage.clear()
+    window.location.href = 'https://noahcp123.github.io/index.html'
+    //window.location.href = 'http://localhost:8888/index.html';
 });
