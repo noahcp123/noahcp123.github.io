@@ -5,6 +5,8 @@ var storeDate = localStorage.getItem('storeDate')
 
 const selectElement = document.querySelector(".type");
 const refreshButton = document.getElementById("refreshButton")
+const logoutButton = document.getElementById("logoutButton")
+
 
 async function onPageLoad() {
   checkAccessToken()
@@ -241,6 +243,12 @@ selectElement.addEventListener("change", (event) => {
 });
 
 refreshButton.addEventListener("click", (event) => {
+    localStorage.clear()
+    window.location.href = 'https://noahcp123.github.io/index.html'
+    //window.location.href = 'http://localhost:8888/index.html';
+});
+
+logoutButton.addEventListener("click", (event) => {
     localStorage.clear()
     window.location.href = 'https://noahcp123.github.io/index.html'
     //window.location.href = 'http://localhost:8888/index.html';
