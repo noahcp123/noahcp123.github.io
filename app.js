@@ -1,42 +1,39 @@
 var me = JSON.parse(localStorage.getItem("me"));
 var access_token = localStorage.getItem("access_token");
 var refresh_token = localStorage.getItem("refresh_token");
+var storeDate = localStorage.getItem('storeDate')
 
 const selectElement = document.querySelector(".type");
 
-async function sendHttpRequest(method, url, headers, body) {
-  //console.log("sendHttpRequest to", url);
-  const response = await fetch(url, {
-    method: method,
-    headers: headers,
-    body: body,
-  });
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-  const data = await response.json();
-  return data;
-}
+async function onPageLoad() {
+  checkAccessToken()
 
-function onPageLoad() {
-  checkAccessToken();
   document.getElementById("display_name").innerHTML =
     "Welcome " + me.display_name;
+
+  if (storeDate - getDate() < 0) {
+    await fetchInitData()
+  }
+
   initData();
 }
 
 function checkAccessToken() {
-
+  if (access_token == null){
+    localStorage.clear()
+    window.location.href = 'https://noahcp123.github.io/index.html'
+  }
 }
 
-async function initData() {
+async function fetchInitData() {
+  console.log('Fetching Init Data')
   const top20 = await getTop20().then((top20) => {
-    console.log(top20);
+    //console.log(top20);
     return top20;
   });
 
   const top20Artists = await getTop20Artists().then((top20Artists) => {
-    console.log(top20Artists);
+    //console.log(top20Artists);
     return top20Artists;
   });
 
@@ -46,6 +43,7 @@ async function initData() {
 
   let songIds = [];
   let artistsIds = [];
+  
   top20.items.forEach((song) => {
     title = song.artists[0].name + " - " + song.name;
     songId = song.id;
@@ -54,13 +52,8 @@ async function initData() {
   });
 
   top20Artists.items.forEach((artist) => {
-    artistList.push(artist.name)
+    artistList.push(artist.name);
   });
-
-  sessionStorage.setItem('songList', songList)
-  sessionStorage.setItem('artistList', artistList)
-
-  updateDisplayList(sessionStorage.getItem('songList'));
 
   for (i = 0; i < songIds.length; ++i) {
     track = await getTrack(songIds[i]);
@@ -71,6 +64,21 @@ async function initData() {
     artists = await getArtists(artistsIds[i]);
     genres.push(artists.genres);
   }
+
+  localStorage.setItem('songList', songList)
+  localStorage.setItem('artistList', artistList)
+  localStorage.setItem('genres', genres)
+  localStorage.setItem('songIds', songIds)
+  localStorage.setItem('artistsIds', artistsIds)
+
+  currentDate = getDate();
+  localStorage.setItem('storeDate', currentDate)
+}
+
+function initData() {
+  genres = localStorage.getItem('genres').split(',')
+  songList = localStorage.getItem("songList").split(',')
+  updateDisplayList(songList);
 
   const flattenedGenres = genres.flatMap((genres) => genres);
   const genreCounts = flattenedGenres.reduce((acc, genre) => {
@@ -95,14 +103,13 @@ async function initData() {
 
   counts = pickHighest(genreCounts);
 
-  console.log(counts);
+  //console.log(counts);
   displayPie(counts);
 }
 
-async function updateDisplayList(list){
-  console.log('updateDisplayList fired')
-  document.getElementById("top-artists").innerHTML = ""
-  list = list.split(',')
+async function updateDisplayList(list) {
+  //console.log("updateDisplayList fired");
+  document.getElementById("top-artists").innerHTML = "";
   for (i = 0; i < 15; ++i) {
     var li = document.createElement("li");
     li.innerText = list[i];
@@ -111,7 +118,7 @@ async function updateDisplayList(list){
 }
 
 async function getTop20() {
-  console.log("getTop20 fired");
+  //console.log("getTop20 fired");
   method = "Get";
   url = "https://api.spotify.com/v1/me/top/tracks";
   headers = { Authorization: "Bearer " + localStorage.getItem("access_token") };
@@ -122,7 +129,7 @@ async function getTop20() {
 }
 
 async function getTop20Artists() {
-  console.log("getTop20Artists fired");
+  //console.log("getTop20Artists fired");
   method = "Get";
   url = "https://api.spotify.com/v1/me/top/artists";
   headers = { Authorization: "Bearer " + localStorage.getItem("access_token") };
@@ -154,6 +161,39 @@ async function getArtists(artistsId) {
   return artists;
 }
 
+// Generic GET request format taking options as params
+async function sendHttpRequest(method, url, headers, body) {
+    //console.log("sendHttpRequest to", url);
+    var data;
+    try {
+        const response = await fetch(url, {
+            method: method,
+            headers: headers,
+            body: body,
+        });
+        data = await response.json();
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+    }
+    catch (error) {
+        localStorage.clear()
+        window.location.href = 'https://noahcp123.github.io/index.html'
+    }
+    return data;
+  }
+  
+
+// Get the current date in YYYYMMDD format
+function getDate(){
+    var currentDate = new Date()
+    var datetime = "" + currentDate.getFullYear()
+                + currentDate.getMonth()
+                + currentDate.getDate()
+    datetime = parseInt(datetime)
+    return datetime
+}
+
 // ----- Chart ------ //
 
 function displayPie(genreCounts) {
@@ -183,14 +223,16 @@ function displayPie(genreCounts) {
   });
 }
 
+
+// Drop down menu event listener
 selectElement.addEventListener("change", (event) => {
-  if (event.target.value == 'songs') {
-    updateDisplayList(sessionStorage.getItem('songList'))
+  if (event.target.value == "songs") {
+    updateDisplayList(localStorage.getItem("songList").split(','));
   }
-  if (event.target.value == 'artists') {
-    updateDisplayList(sessionStorage.getItem('artistList'))
+  if (event.target.value == "artists") {
+    updateDisplayList(localStorage.getItem("artistList").split(','));
   }
-  if (event.target.value == 'albums') {
-    return
+  if (event.target.value == "albums") {
+    return;
   }
 });
