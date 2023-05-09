@@ -18,6 +18,7 @@
       </div>
       <div class="app_content">
         <div id="chart_container">
+          <p id="loading_text">Loading...</p>
           <canvas id="myChart"></canvas>
         </div>
         <div id="top">
@@ -27,6 +28,11 @@
             <option value="songs">Songs</option>
             <!-- <option value="albums">Albums</option> -->
             <option value="artists">Artists</option>
+          </select>
+          <select name="time" class="time">
+            <option value="short_term">This Month</option>
+            <option value="medium_term">Last 6 months</option>
+            <option value="long_term">All Time</option>
           </select>
           <ol id="top-artists"></ol>
         </div>

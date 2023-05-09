@@ -3,10 +3,13 @@ var access_token = localStorage.getItem("access_token");
 var refresh_token = localStorage.getItem("refresh_token");
 var storeDate = localStorage.getItem('storeDate')
 
-const selectElement = document.querySelector(".type");
+const typeSelectElement = document.querySelector(".type");
+const timeSelectElement = document.querySelector(".time")
 const refreshButton = document.getElementById("refreshButton")
 const logoutButton = document.getElementById("logoutButton")
+const ctx = document.getElementById("myChart");
 
+var pieChart;
 
 async function onPageLoad() {
   checkAccessToken()
@@ -17,8 +20,9 @@ async function onPageLoad() {
   if (storeDate - getDate() < 0) {
     await fetchInitData()
   }
-
-  initData();
+  else {
+    initData();
+  }
 }
 
 function checkAccessToken() {
@@ -29,14 +33,14 @@ function checkAccessToken() {
   }
 }
 
-async function fetchInitData() {
+async function fetchInitData(time_frame='short_term') {
   console.log('Fetching Init Data')
-  const top20 = await getTop20().then((top20) => {
-    //console.log(top20);
+  const top20 = await getTop20(time_frame).then((top20) => {
+    console.log(top20);
     return top20;
   });
 
-  const top20Artists = await getTop20Artists().then((top20Artists) => {
+  const top20Artists = await getTop20Artists(time_frame).then((top20Artists) => {
     //console.log(top20Artists);
     return top20Artists;
   });
@@ -77,6 +81,8 @@ async function fetchInitData() {
 
   currentDate = getDate();
   localStorage.setItem('storeDate', currentDate)
+
+  initData();
 }
 
 function initData() {
@@ -121,10 +127,10 @@ async function updateDisplayList(list) {
   }
 }
 
-async function getTop20() {
+async function getTop20(time_frame) {
   //console.log("getTop20 fired");
   method = "Get";
-  url = "https://api.spotify.com/v1/me/top/tracks";
+  url = "https://api.spotify.com/v1/me/top/tracks?time_range=" + time_frame;
   headers = { Authorization: "Bearer " + localStorage.getItem("access_token") };
   body = null;
 
@@ -132,10 +138,10 @@ async function getTop20() {
   return top20;
 }
 
-async function getTop20Artists() {
+async function getTop20Artists(time_frame) {
   //console.log("getTop20Artists fired");
   method = "Get";
-  url = "https://api.spotify.com/v1/me/top/artists";
+  url = "https://api.spotify.com/v1/me/top/artists?time_range=" + time_frame;
   headers = { Authorization: "Bearer " + localStorage.getItem("access_token") };
   body = null;
 
@@ -204,9 +210,20 @@ function getDate(){
 function displayPie(genreCounts) {
   labels_list = Object.keys(genreCounts);
   values_list = Object.values(genreCounts);
-  const ctx = document.getElementById("myChart");
 
-  new Chart(ctx, {
+  // Remove loading text first time around before drawing pie
+  loadingText = document.getElementById('loading_text')
+  if (loadingText != null){
+    document.getElementById('loading_text').remove()
+  }
+
+  // Destroy pie if one exists so we can draw another 
+  if (pieChart != undefined){
+    pieChart.destroy()
+  }
+
+  // Draw pie (pieChart is a global var)
+  pieChart = new Chart(ctx, {
     type: "doughnut",
     data: {
       labels: labels_list,
@@ -219,18 +236,13 @@ function displayPie(genreCounts) {
       ],
     },
     options: {
-      scales: {
-        y: {
-          beginAtZero: true,
-        },
-      },
     },
   });
 }
 
 
 // Drop down menu event listener
-selectElement.addEventListener("change", (event) => {
+typeSelectElement.addEventListener("change", (event) => {
   if (event.target.value == "songs") {
     updateDisplayList(localStorage.getItem("songList").split(','));
   }
@@ -242,10 +254,24 @@ selectElement.addEventListener("change", (event) => {
   }
 });
 
+timeSelectElement.addEventListener("change", (event) => {
+  typeSelectElement.value = 'songs'
+  if (event.target.value == "short_term") {
+    fetchInitData('short_term')
+  }
+  if (event.target.value == "medium_term") {
+    fetchInitData('medium_term')
+  }
+  if (event.target.value == "long_term") {
+    fetchInitData('long_term');
+  }
+});
+
 refreshButton.addEventListener("click", (event) => {
-    localStorage.clear()
-    window.location.href = 'https://noahcp123.github.io/index.html'
-    //window.location.href = 'http://localhost:8888/index.html';
+    localStorage.removeItem('storeDate','songList','artistList','genres','aritstIds','songIds')
+    typeSelectElement.value = 'songs'
+    timeSelectElement.value = "short_term"
+    fetchInitData()
 });
 
 logoutButton.addEventListener("click", (event) => {
