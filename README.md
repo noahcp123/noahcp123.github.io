@@ -8,6 +8,7 @@
 ## Target Browsers
    - Google Chrome
    - Safari
+   - Will not work on Firefox
 
 ## API Used:
    Spotify for Devs:
