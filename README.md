@@ -1,23 +1,23 @@
 # INST377-Final
-##App URL:
-    - noahcp123.github.io
+## App URL
+   noahcp123.github.io
 
-##Title:
-    -Spotster
+## Title
+   Spotster
  
-##Target Browsers:
-    - Google Chrome
-    - Safari
+## Target Browsers
+   - Google Chrome
+   - Safari
 
-##API Used:
-    - Spotify for Devs:
-    - https://developer.spotify.com/
+## API Used:
+   Spotify for Devs:
+   https://developer.spotify.com/
 
-##Visuilazations:
-    - Chart.js
+## Visuilazations:
+   Chart.js
 
-##CSS Framework:
-    - No framework used
+## CSS Framework:
+   No framework used
 
-##Design Problem:    
-    - Display a useful breakdown of users Spotify listening history
+## Design Problem:    
+   Display a useful breakdown of users Spotify listening history
